@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -131,6 +132,42 @@ fun TipCalcScreen() {
             DiscountRadioButton(text = "5% (3-5 блюд)", selected = selectedDiscountIndex == 1)
             DiscountRadioButton(text = "7% (6-10 блюд)", selected = selectedDiscountIndex == 2)
             DiscountRadioButton(text = "10% (>10 блюд)", selected = selectedDiscountIndex == 3)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Блок вывода результатов (выровнен по правому краю, как в чеке)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End
+        ) {
+            // 1. Сумма чаевых
+            Text(
+                text = "Чаевые: ${"%.2f".format(tipAmountResult)} руб.",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // 2. Сумма скидки (с минусом и красным цветом)
+            Text(
+                text = "Скидка: -${"%.2f".format(discountAmountResult)} руб.",
+                fontSize = 16.sp,
+                color = Color(0xFFD32F2F) // Красивый красный цвет
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 3. Итоговая стоимость
+            Text(
+                text = "Итого: ${"%.2f".format(totalResult)} руб.",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary // Цвет из темы приложения
+            )
         }
     }
 }
