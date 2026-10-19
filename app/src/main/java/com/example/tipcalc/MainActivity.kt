@@ -39,6 +39,9 @@ fun TipCalcScreen() {
     var dishesCount by remember { mutableStateOf("") }
     var tipPercent by remember { mutableStateOf(10f) } // Слайдер от 0 до 25
 
+    // Индекс выбранной радиокнопки (-1 = ничего не выбрано)
+    var selectedDiscountIndex by remember { mutableStateOf(-1) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,5 +89,32 @@ fun TipCalcScreen() {
             valueRange = 0f..25f,
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Радиокнопки
+        Text(text = "Скидка (выбирается автоматически):", fontSize = 16.sp)
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            DiscountRadioButton(text = "3% (1-2 блюда)", selected = selectedDiscountIndex == 0)
+            DiscountRadioButton(text = "5% (3-5 блюд)", selected = selectedDiscountIndex == 1)
+            DiscountRadioButton(text = "7% (6-10 блюд)", selected = selectedDiscountIndex == 2)
+            DiscountRadioButton(text = "10% (>10 блюд)", selected = selectedDiscountIndex == 3)
+        }
+    }
+}
+
+// Вспомогательный компонент для радиокнопки (запрещаем клик пользователю)
+@Composable
+fun DiscountRadioButton(text: String, selected: Boolean) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = null // null запрещает пользователю нажимать на кнопку
+        )
+        Text(text = text, fontSize = 16.sp)
     }
 }
