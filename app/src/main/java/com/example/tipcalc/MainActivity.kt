@@ -42,6 +42,37 @@ fun TipCalcScreen() {
     // Индекс выбранной радиокнопки (-1 = ничего не выбрано)
     var selectedDiscountIndex by remember { mutableStateOf(-1) }
 
+    // Состояния для результатов
+    var tipAmountResult by remember { mutableStateOf(0.0) }
+    var discountAmountResult by remember { mutableStateOf(0.0) }
+    var totalResult by remember { mutableStateOf(0.0) }
+
+    // Логика автоматического выбора скидки и подсчёта итога
+    LaunchedEffect(billAmount, dishesCount, tipPercent) {
+        val dishes = dishesCount.toIntOrNull() ?: 0
+        val bill = billAmount.toDoubleOrNull() ?: 0.0
+
+        // 1. Определяем скидку и подсвечиваем нужную радиокнопку
+        val discountPercent = when {
+            dishes in 1..2 -> { selectedDiscountIndex = 0; 3.0 }
+            dishes in 3..5 -> { selectedDiscountIndex = 1; 5.0 }
+            dishes in 6..10 -> { selectedDiscountIndex = 2; 7.0 }
+            dishes > 10 -> { selectedDiscountIndex = 3; 10.0 }
+            else -> { selectedDiscountIndex = -1; 0.0 }
+        }
+
+        // 2. Считаем суммы
+        if (bill > 0.0) {
+            tipAmountResult = bill * (tipPercent / 100.0)
+            discountAmountResult = bill * (discountPercent / 100.0)
+            totalResult = bill + tipAmountResult - discountAmountResult
+        } else {
+            tipAmountResult = 0.0
+            discountAmountResult = 0.0
+            totalResult = 0.0
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
