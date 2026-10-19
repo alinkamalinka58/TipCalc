@@ -89,10 +89,14 @@ fun TipCalcScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Поле суммы
+        // Поле суммы (ограничение ввода: только цифры и точка/запятая)
         OutlinedTextField(
             value = billAmount,
-            onValueChange = { billAmount = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() || it == '.' || it == ',' }) {
+                    billAmount = newValue.replace(',', '.')
+                }
+            },
             label = { Text("Сумма счёта") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
@@ -101,10 +105,14 @@ fun TipCalcScreen() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Поле количества блюд
+        // Поле количества блюд (ограничение ввода: только цифры)
         OutlinedTextField(
             value = dishesCount,
-            onValueChange = { dishesCount = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() } && newValue.length <= 3) {
+                    dishesCount = newValue
+                }
+            },
             label = { Text("Количество блюд") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -140,39 +148,36 @@ fun TipCalcScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Блок вывода результатов (выровнен по правому краю, как в чеке)
+        // Блок вывода результатов
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.End
         ) {
-            // 1. Сумма чаевых
             Text(
                 text = "Чаевые: ${"%.2f".format(tipAmountResult)} руб.",
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // 2. Сумма скидки (с минусом и красным цветом)
             Text(
                 text = "Скидка: -${"%.2f".format(discountAmountResult)} руб.",
                 fontSize = 16.sp,
-                color = Color(0xFFD32F2F) // Красивый красный цвет
+                color = Color(0xFFD32F2F)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 3. Итоговая стоимость
             Text(
                 text = "Итого: ${"%.2f".format(totalResult)} руб.",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary // Цвет из темы приложения
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
 }
 
-// Вспомогательный компонент для радиокнопки (запрещаем клик пользователю)
+// Вспомогательный компонент для радиокнопки
 @Composable
 fun DiscountRadioButton(text: String, selected: Boolean) {
     Row(
@@ -181,7 +186,7 @@ fun DiscountRadioButton(text: String, selected: Boolean) {
     ) {
         RadioButton(
             selected = selected,
-            onClick = null // null запрещает пользователю нажимать на кнопку
+            onClick = null
         )
         Text(text = text, fontSize = 16.sp)
     }
